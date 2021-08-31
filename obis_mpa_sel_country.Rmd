@@ -36,24 +36,24 @@ country_mpa <- wdpa_read_global(filestream=TRUE) %>%
 ```{r obis}
 
 # gets the occurrence data for a single multipolygon (one row of WDPA table)
-# get_one_mpa <- function(x, key){
-#    robis::occurrence(geometry = sf::st_as_text(sf::st_convex_hull(sf::st_geometry(x))))
-# }
-# 
-# df <- country_mpa %>%
-#   dplyr::rowwise() %>%
-#   dplyr::group_map(get_one_mpa,
-#                    .keep = TRUE) %>%
-#   dplyr::bind_rows()
+get_one_mpa <- function(x, key){
+   robis::occurrence(geometry = sf::st_as_text(sf::st_convex_hull(sf::st_geometry(x))))
+}
+
+df <- country_mpa %>%
+  dplyr::rowwise() %>%
+  dplyr::group_map(get_one_mpa,
+                   .keep = TRUE) %>%
+  dplyr::bind_rows()
    
 ```
 
 ## Visualize occurrence records from OBIS for selected country (takes a long time for data rich MPAs!)
 
 ```{r}
-# leaflet() %>%
-#   addTiles("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png") %>%
-#   addCircleMarkers(lat = df$decimalLatitude, lng = df$decimalLongitude, radius = 5, weight = 0, fillOpacity = 1, fillColor = "#cc3300")
+leaflet() %>%
+  addTiles("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png") %>%
+  addCircleMarkers(lat = df$decimalLatitude, lng = df$decimalLongitude, radius = 5, weight = 0, fillOpacity = 1, fillColor = "#cc3300")
 
 ```
 
@@ -64,15 +64,15 @@ convert_mpa_to_WKT <- function(x){
   st_as_text(st_convex_hull(st_geometry(x)))
 }
 
-get_datasets <- function(x){
-  get_one_dataset <- function(x, key){
-    robis::dataset(geometry=convert_mpa_to_WKT(x))
-  }
-  x %>% 
-    dplyr::rowwise() %>% 
-    dplyr::group_map(get_one_dataset, .keep=TRUE) %>% 
-    dplyr::bind_rows()
-}
+# get_datasets <- function(x){
+#   get_one_dataset <- function(x, key){
+#     robis::dataset(geometry=convert_mpa_to_WKT(x))
+#   }
+#   x %>% 
+#     dplyr::rowwise() %>% 
+#     dplyr::group_map(get_one_dataset, .keep=TRUE) %>% 
+#     dplyr::bind_rows()
+# }
 
 ##obis_rec <- get_datasets(country_mpa)
 ```
